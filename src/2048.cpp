@@ -24,7 +24,7 @@ public:
   std::array<Element, MaximumNumber> elements;
   std::mt19937 prng;
 
-  Grid() : elements{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, prng{std::random_device{}()} {
+  Grid() : elements{1}, prng{std::random_device{}()} {
     std::shuffle(elements.begin(), elements.end(), prng);
   }
 
@@ -38,30 +38,24 @@ public:
 
   void move(int x, int y) {
     assert(std::abs(x) + std::abs(y) == 1);
-    const auto outer_end = std::abs(x) == 1 ? height : width;
-    const auto direction = std::abs(x) == 1 ? x : y;
+    const bool transpose = std::abs(y) == 1;
+    const auto outer_end = transpose ? width : height;
+    const auto direction = transpose ? y : x;
     const auto inner_begin = direction == 1 ? 0 : (height + width - outer_end) - 1;
     const auto inner_end = inner_begin + direction * (height + width - outer_end);
     for (int outer = 0; outer != outer_end; ++outer) {
       for (int inner = inner_begin, write = inner_begin; inner != inner_end; inner += direction) {
-        if (x != 0) {
-          if (at(outer, inner) != 0) {
-            std::swap(at(outer, write), at(outer, inner));
-            write += direction;
-          }
-        } else {
-          if (at(inner, outer) != 0) {
-            std::swap(at(write, outer), at(inner, outer));
-            write += direction;
-          }
+        if (at(outer, inner, transpose) != 0) {
+          std::swap(at(outer, write, transpose), at(outer, inner, transpose));
+          write += direction;
         }
       }
     }
   }
 
 private:
-  Element& at(int row, int col) {
-    return elements[row * width + col];
+  Element& at(int row, int col, bool transpose) {
+    return transpose ? elements[col * width + row] : elements[row * width + col];
   }
 };
 
