@@ -46,10 +46,10 @@ public:
         direction == 1 ? 0 : (height + width - outer_end) - 1;
     const auto inner_end =
         inner_begin + direction * (height + width - outer_end);
-    for (int outer = 0; outer != outer_end; ++outer) {
+    for (size_t outer = 0; outer != outer_end; ++outer) {
       bool mergable = false;
       auto write = inner_begin - direction;
-      for (int inner = inner_begin; inner != inner_end; inner += direction) {
+      for (auto inner = inner_begin; inner != inner_end; inner += direction) {
         if (at(outer, inner, transpose) != 0) {
           if (mergable &&
               at(outer, write, transpose) == at(outer, inner, transpose)) {
@@ -97,25 +97,25 @@ private:
 
 using namespace ftxui;
 
-int main(int argc, const char *argv[]) {
+int main(int /* argc */, const char * /* argv */ []) {
   auto screen = ScreenInteractive::FitComponent();
-  using State = Grid<int, 4>;
-  State state;
+  Grid<int, 4> state;
 
   auto component = Renderer([&state] {
     Elements children;
     Elements row;
-    const auto DigitsInMaximumNumber = State::DigitsInMaximumNumber();
+    const auto DigitsInMaximumNumber = state.DigitsInMaximumNumber();
     for (auto cell : state.elements) {
-      row.push_back(text(State::Stringify(cell)) | center |
+      row.push_back(text(state.Stringify(cell)) | bold | center |
                     size(WIDTH, EQUAL, DigitsInMaximumNumber) | border);
-      if (row.size() == State::width) {
+      if (row.size() == state.width) {
         children.push_back(hbox(std::move(row)));
         row.clear();
       }
     }
     children.push_back(
-        hbox(text("Score: " + std::to_string(state.score)),
+        hbox(text("Score: "),
+             text(std::to_string(state.score)) | bold,
              text("(+" + std::to_string(state.score_increase) + ")") |
                  color(Color::Green)));
     return window(text("1 << 11"), vbox(std::move(children)));
