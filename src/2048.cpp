@@ -108,7 +108,8 @@ int main(int /* argc */, const char * /* argv */[]) {
     const auto DigitsInMaximumNumber = state.DigitsInMaximumNumber();
     for (auto cell : state.elements) {
       row.push_back(text(state.Stringify(cell)) | bold | center |
-                    size(WIDTH, EQUAL, DigitsInMaximumNumber) | border);
+                    size(WIDTH, EQUAL, DigitsInMaximumNumber) | border |
+                    color(Color{static_cast<Color::Palette16>(cell)}));
       if (row.size() == state.width) {
         children.push_back(hbox(std::move(row)));
         row.clear();
