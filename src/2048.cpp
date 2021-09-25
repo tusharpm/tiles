@@ -4,6 +4,7 @@
 
 #include <algorithm> // for find, shuffle
 #include <array>     // for array
+#include <cmath>     // for abs
 #include <cstddef>   // for size_t
 #include <memory>    // for shared_ptr
 #include <random>    // for random_device, mt19937
