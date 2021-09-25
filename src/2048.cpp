@@ -22,7 +22,6 @@ public:
   constexpr static auto width = Width;
   constexpr static auto MaximumNumber = height * width;
   std::array<Element, MaximumNumber> elements{};
-  std::mt19937 prng{std::random_device{}()};
   size_t score{}, score_increase{};
 
   Grid() { insertOne(); }
@@ -76,6 +75,8 @@ public:
   }
 
 private:
+  std::mt19937 prng{std::random_device{}()};
+
   Element &at(int row, int col, bool transpose) {
     return transpose ? elements[col * width + row]
                      : elements[row * width + col];
@@ -97,7 +98,7 @@ private:
 
 using namespace ftxui;
 
-int main(int /* argc */, const char * /* argv */ []) {
+int main(int /* argc */, const char * /* argv */[]) {
   auto screen = ScreenInteractive::FitComponent();
   Grid<int, 4> state;
 
@@ -114,8 +115,7 @@ int main(int /* argc */, const char * /* argv */ []) {
       }
     }
     children.push_back(
-        hbox(text("Score: "),
-             text(std::to_string(state.score)) | bold,
+        hbox(text("Score: "), text(std::to_string(state.score)) | bold,
              text("(+" + std::to_string(state.score_increase) + ")") |
                  color(Color::Green)));
     return window(text("1 << 11"), vbox(std::move(children)));
