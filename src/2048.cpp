@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license that can be found in
 // the LICENSE file.
 
-#include <algorithm> // for find, shuffle
+#include <algorithm> // for count
 #include <array>     // for array
 #include <cmath>     // for abs
 #include <cstddef>   // for size_t
@@ -21,11 +21,11 @@ public:
   constexpr static auto height = Height;
   constexpr static auto width = Width;
   constexpr static auto MaximumNumber = height * width;
-  std::array<Element, MaximumNumber> elements;
+  std::array<Element, MaximumNumber> elements{};
   std::mt19937 prng;
 
-  Grid() : elements{1}, prng{std::random_device{}()} {
-    std::shuffle(elements.begin(), elements.end(), prng);
+  Grid() : prng{std::random_device{}()} {
+    insertOne();
   }
 
   size_t DigitsInMaximumNumber() const {
@@ -51,11 +51,25 @@ public:
         }
       }
     }
+    insertOne();
   }
 
 private:
   Element& at(int row, int col, bool transpose) {
     return transpose ? elements[col * width + row] : elements[row * width + col];
+  }
+
+  void insertOne() {
+    if (auto zeros = std::count(elements.begin(), elements.end(), 0)) {
+      auto index = prng() % zeros;
+      int counter = 0;
+      for (auto& elem : elements) {
+        if (elem == 0 && counter++ == index) {
+          elem = 1;
+          break;
+        }
+      }
+    }
   }
 };
 
