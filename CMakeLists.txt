@@ -9,3 +9,10 @@ find_package(ftxui REQUIRED)
 target_link_libraries(fifteen
     PRIVATE ftxui::component
 )
+
+add_executable(2048
+    src/2048.cpp
+)
+target_link_libraries(2048
+    PRIVATE ftxui::component
+)
