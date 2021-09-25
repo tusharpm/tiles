@@ -88,7 +88,7 @@ private:
       int counter = 0;
       for (auto &elem : elements) {
         if (elem == 0 && counter++ == index) {
-          elem = 1;
+          elem = prng() % 6 ? 1 : 2; // 16% chance for 4 tiles.
           break;
         }
       }
@@ -115,11 +115,12 @@ int main(int /* argc */, const char * /* argv */[]) {
         row.clear();
       }
     }
+    children.push_back(separator());
     children.push_back(
         hbox(text("Score: "), text(std::to_string(state.score)) | bold,
              text("(+" + std::to_string(state.score_increase) + ")") |
                  color(Color::Green)));
-    return window(text("1 << 11"), vbox(std::move(children)));
+    return window(text(" 1 << 11 "), vbox(std::move(children)));
   });
 
   component = CatchEvent(component, [&](Event event) {
