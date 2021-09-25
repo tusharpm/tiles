@@ -46,18 +46,18 @@ public:
     const auto inner_end =
         inner_begin + direction * (height + width - outer_end);
     for (size_t outer = 0; outer != outer_end; ++outer) {
-      bool mergable = false;
+      bool mergeable = false;
       auto write = inner_begin - direction;
       for (auto inner = inner_begin; inner != inner_end; inner += direction) {
         if (at(outer, inner, transpose) != 0) {
-          if (mergable &&
+          if (mergeable &&
               at(outer, write, transpose) == at(outer, inner, transpose)) {
-            mergable = false;
+            mergeable = false;
             score_increase += 1 << ++at(outer, write, transpose);
             at(outer, inner, transpose) = 0;
             valid = true;
           } else {
-            mergable = true;
+            mergeable = true;
             write += direction;
             if (write != inner) {
               std::swap(at(outer, write, transpose),
