@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license that can be found in
 // the LICENSE file.
 
-#include <algorithm> // for count
+#include <algorithm> // for count, max_element
 #include <array>     // for array
 #include <cmath>     // for abs
 #include <cstddef>   // for size_t
@@ -24,16 +24,15 @@ public:
   std::array<Element, MaximumNumber> elements{};
   std::mt19937 prng;
 
-  Grid() : prng{std::random_device{}()} {
-    insertOne();
+  Grid() : prng{std::random_device{}()} { insertOne(); }
+
+  static std::string Stringify(Element elem) {
+    return elem ? std::to_string(1 << elem) : "";
   }
 
   size_t DigitsInMaximumNumber() const {
-    auto number = 1 << *std::max_element(elements.begin(), elements.end());
-    size_t ret = 1;
-    while (number /= 10)
-      ++ret;
-    return ret;
+    return Stringify(*std::max_element(elements.begin(), elements.end()))
+        .size();
   }
 
   void move(int x, int y) {
@@ -42,13 +41,17 @@ public:
     const bool transpose = std::abs(y) == 1;
     const auto outer_end = transpose ? width : height;
     const auto direction = transpose ? y : x;
-    const auto inner_begin = direction == 1 ? 0 : (height + width - outer_end) - 1;
-    const auto inner_end = inner_begin + direction * (height + width - outer_end);
+    const auto inner_begin =
+        direction == 1 ? 0 : (height + width - outer_end) - 1;
+    const auto inner_end =
+        inner_begin + direction * (height + width - outer_end);
     for (int outer = 0; outer != outer_end; ++outer) {
       bool mergable = false;
-      for (int inner = inner_begin, write = inner - direction; inner != inner_end; inner += direction) {
+      auto write = inner_begin - direction;
+      for (int inner = inner_begin; inner != inner_end; inner += direction) {
         if (at(outer, inner, transpose) != 0) {
-          if (mergable && at(outer, write, transpose) == at(outer, inner, transpose)) {
+          if (mergable &&
+              at(outer, write, transpose) == at(outer, inner, transpose)) {
             mergable = false;
             ++at(outer, write, transpose);
             at(outer, inner, transpose) = 0;
@@ -57,7 +60,8 @@ public:
             mergable = true;
             write += direction;
             if (write != inner) {
-              std::swap(at(outer, write, transpose), at(outer, inner, transpose));
+              std::swap(at(outer, write, transpose),
+                        at(outer, inner, transpose));
               valid = true;
             }
           }
@@ -70,15 +74,16 @@ public:
   }
 
 private:
-  Element& at(int row, int col, bool transpose) {
-    return transpose ? elements[col * width + row] : elements[row * width + col];
+  Element &at(int row, int col, bool transpose) {
+    return transpose ? elements[col * width + row]
+                     : elements[row * width + col];
   }
 
   void insertOne() {
     if (auto zeros = std::count(elements.begin(), elements.end(), 0)) {
       auto index = prng() % zeros;
       int counter = 0;
-      for (auto& elem : elements) {
+      for (auto &elem : elements) {
         if (elem == 0 && counter++ == index) {
           elem = 1;
           break;
@@ -98,17 +103,10 @@ int main(int argc, const char *argv[]) {
   auto component = Renderer([&state] {
     Elements children;
     Elements row;
-    const auto DigitsInMaximumVisibleNumber = state.DigitsInMaximumNumber();
+    const auto DigitsInMaximumNumber = state.DigitsInMaximumNumber();
     for (auto cell : state.elements) {
-      if (cell == 0) {
-        row.push_back(text("") |
-                      size(WIDTH, EQUAL, DigitsInMaximumVisibleNumber) |
-                      border);
-      } else {
-        row.push_back(text(std::to_string(1 << cell)) | align_right |
-                      size(WIDTH, EQUAL, DigitsInMaximumVisibleNumber) |
-                      border);
-      }
+      row.push_back(text(State::Stringify(cell)) | align_right |
+                    size(WIDTH, EQUAL, DigitsInMaximumNumber) | border);
       if (row.size() == State::width) {
         children.push_back(hbox(std::move(row)));
         row.clear();
@@ -122,13 +120,13 @@ int main(int argc, const char *argv[]) {
       screen.ExitLoopClosure()();
     } else if (event == Event::Return || event.input() == "r") {
       state = {};
-    } else if (event == Event::ArrowUp) {
+    } else if (event == Event::ArrowUp || event.input() == "w") {
       state.move(0, 1);
-    } else if (event == Event::ArrowDown) {
+    } else if (event == Event::ArrowDown || event.input() == "s") {
       state.move(0, -1);
-    } else if (event == Event::ArrowLeft) {
+    } else if (event == Event::ArrowLeft || event.input() == "a") {
       state.move(1, 0);
-    } else if (event == Event::ArrowRight) {
+    } else if (event == Event::ArrowRight || event.input() == "d") {
       state.move(-1, 0);
     }
     return false;
