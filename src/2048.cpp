@@ -22,9 +22,9 @@ public:
   constexpr static auto width = Width;
   constexpr static auto MaximumNumber = height * width;
   std::array<Element, MaximumNumber> elements{};
-  std::mt19937 prng;
+  std::mt19937 prng{std::random_device{}()};
 
-  Grid() : prng{std::random_device{}()} { insertOne(); }
+  Grid() { insertOne(); }
 
   static std::string Stringify(Element elem) {
     return elem ? std::to_string(1 << elem) : "";
