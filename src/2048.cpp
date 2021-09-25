@@ -38,6 +38,7 @@ public:
 
   void move(int x, int y) {
     assert(std::abs(x) + std::abs(y) == 1);
+    bool valid = false;
     const bool transpose = std::abs(y) == 1;
     const auto outer_end = transpose ? width : height;
     const auto direction = transpose ? y : x;
@@ -51,15 +52,21 @@ public:
             mergable = false;
             ++at(outer, write, transpose);
             at(outer, inner, transpose) = 0;
+            valid = true;
           } else {
             mergable = true;
             write += direction;
-            std::swap(at(outer, write, transpose), at(outer, inner, transpose));
+            if (write != inner) {
+              std::swap(at(outer, write, transpose), at(outer, inner, transpose));
+              valid = true;
+            }
           }
         }
       }
     }
-    insertOne();
+    if (valid) {
+      insertOne();
+    }
   }
 
 private:
