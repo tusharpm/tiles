@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license that can be found in
 // the LICENSE file.
 
-#include <algorithm> // for count, max_element
+#include <algorithm> // for count
 #include <array>     // for array
 #include <cmath>     // for abs
 #include <cstddef>   // for size_t
@@ -30,9 +30,8 @@ public:
     return elem ? std::to_string(1 << elem) : "";
   }
 
-  size_t DigitsInMaximumNumber() const {
-    return Stringify(*std::max_element(elements.begin(), elements.end()))
-        .size();
+  static size_t DigitsInMaximumNumber() {
+    return Stringify(MaximumNumber).size();
   }
 
   void move(int x, int y) {
@@ -103,9 +102,9 @@ int main(int argc, const char *argv[]) {
   auto component = Renderer([&state] {
     Elements children;
     Elements row;
-    const auto DigitsInMaximumNumber = state.DigitsInMaximumNumber();
+    const auto DigitsInMaximumNumber = State::DigitsInMaximumNumber();
     for (auto cell : state.elements) {
-      row.push_back(text(State::Stringify(cell)) | align_right |
+      row.push_back(text(State::Stringify(cell)) | center |
                     size(WIDTH, EQUAL, DigitsInMaximumNumber) | border);
       if (row.size() == State::width) {
         children.push_back(hbox(std::move(row)));
