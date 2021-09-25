@@ -44,10 +44,18 @@ public:
     const auto inner_begin = direction == 1 ? 0 : (height + width - outer_end) - 1;
     const auto inner_end = inner_begin + direction * (height + width - outer_end);
     for (int outer = 0; outer != outer_end; ++outer) {
-      for (int inner = inner_begin, write = inner_begin; inner != inner_end; inner += direction) {
+      bool mergable = false;
+      for (int inner = inner_begin, write = inner - direction; inner != inner_end; inner += direction) {
         if (at(outer, inner, transpose) != 0) {
-          std::swap(at(outer, write, transpose), at(outer, inner, transpose));
-          write += direction;
+          if (mergable && at(outer, write, transpose) == at(outer, inner, transpose)) {
+            mergable = false;
+            ++at(outer, write, transpose);
+            at(outer, inner, transpose) = 0;
+          } else {
+            mergable = true;
+            write += direction;
+            std::swap(at(outer, write, transpose), at(outer, inner, transpose));
+          }
         }
       }
     }
