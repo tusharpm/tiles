@@ -23,6 +23,7 @@ public:
   constexpr static auto MaximumNumber = height * width;
   std::array<Element, MaximumNumber> elements{};
   std::mt19937 prng{std::random_device{}()};
+  size_t score{}, score_increase{};
 
   Grid() { insertOne(); }
 
@@ -37,6 +38,7 @@ public:
   void move(int x, int y) {
     assert(std::abs(x) + std::abs(y) == 1);
     bool valid = false;
+    score_increase = 0;
     const bool transpose = std::abs(y) == 1;
     const auto outer_end = transpose ? width : height;
     const auto direction = transpose ? y : x;
@@ -52,7 +54,7 @@ public:
           if (mergable &&
               at(outer, write, transpose) == at(outer, inner, transpose)) {
             mergable = false;
-            ++at(outer, write, transpose);
+            score_increase += 1 << ++at(outer, write, transpose);
             at(outer, inner, transpose) = 0;
             valid = true;
           } else {
@@ -69,6 +71,7 @@ public:
     }
     if (valid) {
       insertOne();
+      score += score_increase;
     }
   }
 
@@ -111,6 +114,10 @@ int main(int argc, const char *argv[]) {
         row.clear();
       }
     }
+    children.push_back(
+        hbox(text("Score: " + std::to_string(state.score)),
+             text("(+" + std::to_string(state.score_increase) + ")") |
+                 color(Color::Green)));
     return window(text("1 << 11"), vbox(std::move(children)));
   });
 
