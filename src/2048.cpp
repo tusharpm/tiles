@@ -23,6 +23,7 @@ public:
   constexpr static auto MaximumNumber = height * width;
   std::array<Element, MaximumNumber> elements{};
   size_t score{}, score_increase{};
+  bool game_over = false;
 
   Grid() { insertOne(); }
 
@@ -77,7 +78,7 @@ public:
 private:
   std::mt19937 prng{std::random_device{}()};
 
-  Element &at(int row, int col, bool transpose) {
+  Element &at(int row, int col, bool transpose = false) {
     return transpose ? elements[col * width + row]
                      : elements[row * width + col];
   }
@@ -92,6 +93,19 @@ private:
           break;
         }
       }
+      if (zeros == 1) {
+        for (size_t row = 0; row != height; ++row) {
+          for (size_t col = 0; col != width; ++col) {
+            if ((row && at(row, col) == at(row - 1, col)) ||
+                (col && at(row, col) == at(row, col - 1))) {
+              return;
+            }
+          }
+        }
+        game_over = true;
+      }
+    } else {
+      game_over = true;
     }
   }
 };
@@ -114,6 +128,10 @@ int main(int /* argc */, const char * /* argv */[]) {
         children.push_back(hbox(std::move(row)));
         row.clear();
       }
+    }
+    if (state.game_over) {
+      children.push_back(text("Game Over") | bold | center | border |
+                         color(Color::Red));
     }
     children.push_back(separator());
     children.push_back(
