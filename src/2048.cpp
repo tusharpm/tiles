@@ -37,7 +37,7 @@ public:
   void move(int x, int y) {
     assert(std::abs(x) + std::abs(y) == 1);
     bool valid = false;
-    score_increase = 0;
+    size_t move_increase = 0;
     const bool transpose = std::abs(y) == 1;
     const auto outer_end = transpose ? width : height;
     const auto direction = transpose ? y : x;
@@ -53,7 +53,7 @@ public:
           if (mergeable &&
               at(outer, write, transpose) == at(outer, inner, transpose)) {
             mergeable = false;
-            score_increase += 1 << ++at(outer, write, transpose);
+            move_increase += 1 << ++at(outer, write, transpose);
             at(outer, inner, transpose) = 0;
             valid = true;
           } else {
@@ -70,7 +70,7 @@ public:
     }
     if (valid) {
       insertOne();
-      score += score_increase;
+      score += score_increase = move_increase;
     }
   }
 
