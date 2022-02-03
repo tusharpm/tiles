@@ -4,6 +4,7 @@
 
 #include <algorithm> // for count
 #include <array>     // for array
+#include <cassert>   // for assert
 #include <cmath>     // for abs
 #include <cstddef>   // for size_t
 #include <memory>    // for shared_ptr
