@@ -7,7 +7,8 @@
 [![contributors](https://img.shields.io/github/contributors/tusharpm/tiles?color=blue)](https://github.com/tusharpm/tiles/graphs/contributors)
 
 A collection of terminal-based tiled games using [FTXUI](https://github.com/ArthurSonzogni/ftxui).
-- 2048
+- 2048  
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/4759106/152344137-42e991d1-f840-447c-a690-cd0347bedc3b.gif)
 - fifteen (in-progress)
 
 ## Build instructions:
