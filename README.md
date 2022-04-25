@@ -10,11 +10,12 @@ A collection of terminal-based tiled games using [FTXUI](https://github.com/Arth
 - 2048  
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/4759106/152344137-42e991d1-f840-447c-a690-cd0347bedc3b.gif)
 - fifteen (in-progress)
+- tambola (in-progress)
 
 ## Build instructions:
 ```
 cmake -S . -B build
 cmake --build build
 ./build/2048
-# or ./build/fifteen
+# or ./build/fifteen or ./build/tambola
 ```
