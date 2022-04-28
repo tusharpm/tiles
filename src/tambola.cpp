@@ -2,12 +2,13 @@
 // Use of this source code is governed by the MIT license that can be found in
 // the LICENSE file.
 
-#include <algorithm> // for find, shuffle
+#include <algorithm> // for shuffle
 #include <array>     // for array
 #include <cstddef>   // for size_t
 #include <iomanip>   // for setw
 #include <iostream>  // for cout
 #include <memory>    // for shared_ptr
+#include <numeric>   // for iota
 #include <random>    // for random_device, mt19937
 #include <string>    // for to_string, string
 #include <utility>   // for move, swap
@@ -75,12 +76,10 @@ struct Grid {
     return collection.begin() + (prng() % collection.size());
   }
 
-  auto shuffledRange(size_t size) {
-    std::vector<size_t> result;
-    result.reserve(size);
-    while (size--) {
-      result.push_back(size);
-    }
+  template<size_t size>
+  auto shuffledRange() {
+    std::array<size_t, size> result;
+    std::iota(result.begin(), result.end(), 0);
     std::shuffle(result.begin(), result.end(), prng);
     return result;
   }
@@ -122,7 +121,7 @@ struct Grid {
       const size_t colLimit = 2 + pass / 3;
       for (size_t i = 0; i != columns.size(); ++i) {
         if (auto& col = columns[i]; !col.empty()) {
-          for (auto randSetIndex : shuffledRange(sets.size())) {
+          for (auto randSetIndex : shuffledRange<sets.size()>()) {
             auto& randSet = sets[randSetIndex];
             if (randSet[i].size() != colLimit && cardinality(randSet) != 15) {
               randSet[i].push_back(col.back());
@@ -142,7 +141,7 @@ struct Grid {
       // fill each row
       for (size_t row = 0; row != Ticket::height; ++row) {
         for (size_t size = Ticket::height - row; size != 0; --size) {
-          for (auto col : shuffledRange(columns.size())) {
+          for (auto col : shuffledRange<columns.size()>()) {
             if (currTicket.numbers[row][col] == 0) {
               if (auto& currSetCol = currSet[col]; currSetCol.size() == size) {
                 currTicket.numbers[row][col] = currSetCol.back();
